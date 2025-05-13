@@ -1,7 +1,7 @@
 <!-- src/app/components/course-list/course-list.component.html -->
 <div class="container">
-  <h1>Kurschema</h1>
-  
+  <h1>Kursöversikt</h1>
+
   <div class="search-box">
     <input
       type="text"
@@ -14,21 +14,25 @@
   <table>
     <thead>
       <tr>
-        <th (click)="sortCourses('code')">Kurskod {{ getSortIcon('code') }}</th>
-        <th (click)="sortCourses('coursename')">Kursnamn {{ getSortIcon('coursename') }}</th>
+        <th (click)="sortCourses('code')">Kod {{ getSortIcon('code') }}</th>
+        <th (click)="sortCourses('coursename')">Namn {{ getSortIcon('coursename') }}</th>
         <th (click)="sortCourses('progression')">Nivå {{ getSortIcon('progression') }}</th>
+        <th>Kursplan</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let course of filteredCourses">
+      <tr *ngFor="let course of filteredCourses || []">
         <td>{{ course.code }}</td>
         <td>{{ course.coursename }}</td>
         <td>{{ course.progression }}</td>
+        <td>
+          <a [href]="course.syllabus" target="_blank">Länk till kursplan</a>
+        </td>
       </tr>
     </tbody>
   </table>
 
   <div *ngIf="filteredCourses.length === 0" class="no-results">
-    Inga resultat
+    Inga resultat matchade din sökning
   </div>
 </div>

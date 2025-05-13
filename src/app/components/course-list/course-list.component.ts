@@ -28,24 +28,34 @@ export class CourseListComponent implements OnInit {
   private loadCourses(): void {
     this.courseService.getCourses().subscribe({
       next: (data) => {
-        this.courses = data;
-        this.filteredCourses = [...data];
-        this.sortCourses();
+        if (Array.isArray(data)) {
+          this.courses = data;
+          this.filteredCourses = [...data];
+          this.sortCourses();
+        } else {
+          console.error('Invalid data format:', data);
+          this.filteredCourses = [];
+        }
       },
-      error: (err) => console.error('Error loading courses:', err)
+      error: (err) => {
+        console.error('Error loading courses:', err);
+        this.filteredCourses = [];
+      }
     });
   }
 
   applyFilter(): void {
     const term = this.searchTerm.toLowerCase();
     this.filteredCourses = this.courses.filter(course =>
-      course.code.toLowerCase().includes(term) ||
-      course.coursename.toLowerCase().includes(term)
+      (course.code?.toLowerCase().includes(term) || 
+      course.coursename?.toLowerCase().includes(term))
     );
     this.sortCourses();
   }
 
   sortCourses(field: keyof Course = this.sortField): void {
+    if (!Array.isArray(this.filteredCourses)) return;
+
     if (field === this.sortField) {
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
     } else {
@@ -54,8 +64,8 @@ export class CourseListComponent implements OnInit {
     }
 
     this.filteredCourses.sort((a, b) => {
-      const valueA = a[field].toString().toLowerCase();
-      const valueB = b[field].toString().toLowerCase();
+      const valueA = a[field]?.toString().toLowerCase() || '';
+      const valueB = b[field]?.toString().toLowerCase() || '';
       return this.sortDirection === 'asc' 
         ? valueA.localeCompare(valueB) 
         : valueB.localeCompare(valueA);
